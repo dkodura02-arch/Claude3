@@ -46,7 +46,10 @@ export interface Recipe {
   notes?: string;
   /** Manually chosen months (1-12). Empty/undefined = detect from ingredients. */
   seasonMonths?: number[];
+  /** Part of the built-in vegetarian collection */
   sample?: boolean;
+  /** Favourites come up twice as often when shuffling */
+  favorite?: boolean;
   createdAt: number;
 }
 

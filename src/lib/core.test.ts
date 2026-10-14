@@ -8,10 +8,14 @@ import { MONTHS_SHORT } from './labels';
 import type { Carb, Recipe, WeekPlan } from './types';
 
 function seededRng(seed = 1) {
-  let s = seed;
+  // mulberry32 – good spread even for small, consecutive seeds
+  let a = seed * 2654435761;
   return () => {
-    s = (s * 16807) % 2147483647;
-    return (s - 1) / 2147483646;
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
 }
 
@@ -174,7 +178,8 @@ describe('shuffle – Big Batch', () => {
         expect(p.reasons.join()).toContain('Brokkoli');
       }
     }
-    expect(hits).toBeGreaterThan(70); // > fair share of 40
+    // weight 2 vs 4 x 1 -> about a third instead of the fair share of 20 %
+    expect(hits).toBeGreaterThan(50);
   });
 
   it('applies effort and price filters strictly', () => {

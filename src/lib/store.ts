@@ -137,6 +137,11 @@ export class Store {
     return d && !d.deleted && d.data ? (d.data as CollectionTypes[C]) : undefined;
   }
 
+  /** True if the document exists or existed (deleted ones count, so they aren't re-added). */
+  known(coll: Collection, id: string): boolean {
+    return this.docs.has(keyOf(coll, id));
+  }
+
   put<C extends Collection>(coll: C, id: string, data: CollectionTypes[C]) {
     this.write({ coll, id, data, deleted: false });
   }

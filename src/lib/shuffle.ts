@@ -26,6 +26,8 @@ export interface SlotPick {
   relaxed?: string;
 }
 
+/** Favourites are this many times as likely to be picked. */
+const FAVORITE_FACTOR = 2;
 /** Share of the Big Batch pool that is blocked after being cooked (no repeats). */
 const BIG_REPEAT_WINDOW = 0.6;
 /** Previous plans further back than this don't count for "directly after each other". */
@@ -99,6 +101,10 @@ function pantryMatches(r: Recipe, pantry: string[]): { direct: string[]; flex: s
 function score(r: Recipe, ctx: ShuffleContext, cooked: Map<string, number>, useRecency: boolean): Scored {
   const reasons: string[] = [];
   let weight = 1;
+  if (r.favorite) {
+    weight *= FAVORITE_FACTOR;
+    reasons.push('Favorit');
+  }
 
   const season = recipeSeason(r, weekMonth(ctx.week));
   weight *= seasonFactor(season);
@@ -109,8 +115,9 @@ function score(r: Recipe, ctx: ShuffleContext, cooked: Map<string, number>, useR
   }
 
   const { direct, flex } = pantryMatches(r, ctx.pantry);
-  const m = direct.length + (flex.length ? 1 : 0);
-  if (m) weight *= Math.min(4, 1 + 0.8 * m);
+  // what's in the fridge should get used: each matching ingredient counts a lot, flexible vegetables a bit less
+  const pantryBoost = 1.5 * direct.length + (flex.length ? 1 : 0);
+  if (pantryBoost) weight *= Math.min(6, 1 + pantryBoost);
   if (direct.length) reasons.push(`Habt ihr da: ${direct.join(', ')}`);
   if (flex.length) reasons.push(`Flexibles Gemüse: ${flex.join(', ')}`);
 

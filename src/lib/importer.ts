@@ -215,7 +215,7 @@ export function parseRecipeHtml(html: string, url?: string): ImportedRecipe | nu
   };
 }
 
-const ING_HEAD = /^(zutaten|einkaufsliste|du brauchst|ihr braucht|für \d+ (portionen|personen))\b/i;
+const ING_HEAD = /^(zutaten|einkaufsliste|du brauchst|ihr braucht|für \d+(?:[.,]\d+)? (portionen|personen))\b/i;
 const STEP_HEAD = /^(zubereitung|anleitung|so geht'?s|schritte|arbeitsschritte|zubereitungsschritte|methode)\b/i;
 const NOTE_HEAD = /^(tipps?|notizen?|hinweis)\b/i;
 const LOOKS_LIKE_ING = /^([\d½¼¾⅓⅔]|etwas\b|n\.\s?b\.|eine?\b|prise\b|salz\b|pfeffer\b)/i;
@@ -237,7 +237,7 @@ export function parseRecipeText(text: string): ImportedRecipe {
   const hasHeadings = nonEmpty.some((l) => ING_HEAD.test(l) || STEP_HEAD.test(l));
 
   for (const line of nonEmpty.slice(1)) {
-    const portion = line.match(/(\d+)\s*(portionen|personen|pers\.)/i);
+    const portion = line.match(/(\d+)(?:[.,]\d+)?\s*(portionen|personen|pers\.)/i);
     if (portion && !servingsN) servingsN = Number(portion[1]);
     if (ING_HEAD.test(line)) {
       section = 'ing';

@@ -14,7 +14,10 @@ Unser Wochen-Kochplaner: Rezepte mit Bild und Zutaten, Saisonkalender, Shuffle-M
   - Die beiden Gerichte einer Woche haben möglichst nicht dasselbe Hauptgemüse.
   - **„Was haben wir da?“:** Rezepte mit Zutaten aus dem Kühlschrank werden bevorzugt. Rezepte mit **flexiblem Gemüse** passen zu jedem Gemüse.
   - Einzeln neu würfeln, festhalten oder selbst wählen. Filter für Aufwand und Preis.
-- **Rezepte:** per Link (Chefkoch, KptnCook, Lecker, Blogs …), als eingefügter Text oder von Hand mit Foto. Jedes Rezept hat **Typ** (Big/Small Batch), **Aufwand** (leicht/mittel/aufwendig), **Preis** (1–5 €), **Kohlenhydrat** und optional **flexibles Gemüse**.
+- **Rezepte:** per Link (Chefkoch, KptnCook, Lecker, Blogs …), als **PDF** (z. B. Export aus einer Kochbuch-App – auch mehrere Dateien oder Rezepte auf einmal), als eingefügter Text oder von Hand mit Foto. Jedes Rezept hat **Typ** (Big/Small Batch), **Aufwand** (leicht/mittel/aufwendig), **Preis** (1–5 €), **Kohlenhydrat** und optional **flexibles Gemüse**.
+- **Rezeptsammlung:** gut 40 einfache, günstige Gerichte ohne Fleisch zum Starten – einzeln löschbar, gelöschte kommen nicht wieder.
+- **Favoriten (♥):** kommen beim Würfeln doppelt so oft dran.
+- **Schriftgröße:** Normal, Groß (Standard) oder Sehr groß – pro Gerät in den Einstellungen.
 - **Einkaufsliste:** entsteht automatisch aus dem Wochenplan, gleiche Zutaten werden zusammengefasst und nach Supermarkt-Bereichen sortiert. Ihr könnt abhaken, eigene Einträge ergänzen und die Liste teilen. Was im Vorrat ist, fliegt raus.
 - **Saison:** Saisonkalender für Deutschland, Monat für Monat, mit euren passenden Rezepten.
 - **Gemeinsam:** Beide Handys sehen dieselben Daten. Der Speicher liegt im Google-Drive-Ordner „Kochplaner“, mit täglicher Sicherung. Offline geht alles weiter und wird später abgeglichen.

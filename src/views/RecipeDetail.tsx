@@ -1,4 +1,4 @@
-import { ArrowLeft, CalendarPlus, ExternalLink, Pencil, Trash2 } from 'lucide-react';
+import { ArrowLeft, CalendarPlus, ExternalLink, Heart, Pencil, Trash2 } from 'lucide-react';
 import { navigate, useApp } from '../AppState';
 import { RecipeBadges, RecipeImage } from '../components/ui';
 import { isoWeekNumber, weekMonth, weeksBetween } from '../lib/dates';
@@ -62,9 +62,19 @@ export function RecipeDetail({ id }: { id: string }) {
           <button className="icon-btn solid" onClick={() => history.back()} aria-label="Zurück">
             <ArrowLeft size={20} />
           </button>
-          <button className="icon-btn solid" onClick={() => navigate({ name: 'bearbeiten', id })} aria-label="Bearbeiten">
-            <Pencil size={18} />
-          </button>
+          <div className="row">
+            <button
+              className={`icon-btn solid fav-btn ${recipe.favorite ? 'on' : ''}`}
+              onClick={() => store.put('recipes', recipe.id, { ...recipe, favorite: !recipe.favorite })}
+              aria-label={recipe.favorite ? 'Kein Favorit mehr' : 'Als Favorit markieren'}
+              aria-pressed={!!recipe.favorite}
+            >
+              <Heart size={20} fill={recipe.favorite ? 'currentColor' : 'none'} />
+            </button>
+            <button className="icon-btn solid" onClick={() => navigate({ name: 'bearbeiten', id })} aria-label="Bearbeiten">
+              <Pencil size={18} />
+            </button>
+          </div>
         </div>
       </div>
 

@@ -1,9 +1,11 @@
 import { useRef, useState } from 'react';
-import { CheckCircle2, Cloud, Copy, Download, HardDrive, Link2, Loader2, RefreshCw, Trash2, Upload } from 'lucide-react';
+import { CheckCircle2, Cloud, Copy, Download, HardDrive, Link2, Loader2, RefreshCw, Trash2, Type, Upload } from 'lucide-react';
 import { useApp } from '../AppState';
 import { callApi, errorMessage } from '../lib/api';
 import { useStoreVersion } from '../lib/hooks';
 import { store } from '../lib/store';
+import { getFontSize, setFontSize, type FontSize } from '../lib/prefs';
+import { addStarterRecipes, missingStarterCount } from '../lib/samples';
 import scriptCode from '../../apps-script/Code.gs?raw';
 
 function hashParam(name: string): string {
@@ -19,7 +21,9 @@ export function SettingsView() {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; text: string; folderUrl?: string } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const samples = store.list('recipes').filter((r) => r.sample);
+  const [font, setFont] = useState<FontSize>(getFontSize());
+  const samples = store.list('recipes').filter((r) => r.sample && !r.favorite);
+  const missing = missingStarterCount({ includeDeleted: true });
 
   const connect = async () => {
     const cfg = { url: url.trim(), password };
@@ -76,6 +80,39 @@ export function SettingsView() {
 
   return (
     <div className="page">
+      <section className="card card-pad stack">
+        <div className="row">
+          <Type size={22} className="muted" />
+          <h2 style={{ flex: 1 }}>Schriftgröße</h2>
+        </div>
+        <div className="segmented font-picker" role="radiogroup" aria-label="Schriftgröße">
+          {(
+            [
+              ['normal', 'Normal', 16],
+              ['gross', 'Groß', 20],
+              ['sehr-gross', 'Sehr groß', 25],
+            ] as [FontSize, string, number][]
+          ).map(([id, label, px]) => (
+            <button
+              key={id}
+              role="radio"
+              aria-checked={font === id}
+              className={font === id ? 'on' : ''}
+              onClick={() => {
+                setFont(id);
+                setFontSize(id);
+              }}
+            >
+              <span style={{ fontSize: px, fontFamily: 'var(--font-head)', lineHeight: 1 }}>A</span>
+              <small>{label}</small>
+            </button>
+          ))}
+        </div>
+        <p className="hint" style={{ margin: 0 }}>
+          Gilt nur für dieses Gerät.
+        </p>
+      </section>
+
       <section className="card card-pad stack">
         <div className="row">
           {store.online ? <Cloud size={22} className="muted" /> : <HardDrive size={22} className="muted" />}
@@ -201,15 +238,34 @@ export function SettingsView() {
           <input ref={fileRef} type="file" accept="application/json,.json" hidden onChange={(e) => importData(e.target.files?.[0])} />
         </div>
         {store.online && <p className="hint" style={{ margin: 0 }}>Zusätzlich legt das Script täglich eine Sicherung im Drive-Ordner „Kochplaner/Backups“ an.</p>}
+      </section>
+
+      <section className="card card-pad stack">
+        <h2>Rezeptsammlung</h2>
+        <p className="hint" style={{ margin: 0 }}>
+          Einfache, günstige Gerichte ohne Fleisch zum Starten. Einzelne Rezepte löscht ihr direkt beim Rezept; gelöschte kommen nicht wieder.
+        </p>
+        {missing > 0 && (
+          <button
+            className="btn soft"
+            onClick={() => {
+              const n = addStarterRecipes({ includeDeleted: true });
+              showToast(`${n} Rezepte hinzugefügt`);
+            }}
+          >
+            <Upload size={16} /> {missing} Rezepte aus der Sammlung hinzufügen
+          </button>
+        )}
         {samples.length > 0 && (
           <button
             className="btn danger"
             onClick={() => {
+              if (!confirm(`${samples.length} Sammlungs-Rezepte löschen? Favoriten und eure eigenen Rezepte bleiben.`)) return;
               store.batch(() => samples.forEach((r) => store.remove('recipes', r.id)));
-              showToast('Beispielrezepte entfernt');
+              showToast('Sammlung entfernt – Favoriten sind geblieben');
             }}
           >
-            <Trash2 size={16} /> {samples.length} Beispielrezepte entfernen
+            <Trash2 size={16} /> Sammlung entfernen (außer Favoriten)
           </button>
         )}
       </section>

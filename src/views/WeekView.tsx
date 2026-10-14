@@ -4,6 +4,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Dices,
+  Heart,
   Leaf,
   ListChecks,
   Lock,
@@ -23,7 +24,7 @@ import { useCollection } from '../lib/hooks';
 import { ingredientKey } from '../lib/ingredients';
 import { PRODUCE, produceInSeason } from '../lib/season';
 import { explain, shuffleWeek, type ShuffleContext, type Slot } from '../lib/shuffle';
-import { sampleRecipes } from '../lib/samples';
+import { addStarterRecipes, starterRecipes } from '../lib/samples';
 import { store } from '../lib/store';
 import type { Effort, Price, Recipe, WeekPlan } from '../lib/types';
 
@@ -105,12 +106,12 @@ export function WeekView() {
           <button className="btn primary" onClick={() => navigate({ name: 'neu' })}>
             <Plus size={18} /> Erstes Rezept hinzufügen
           </button>
-          <button
-            className="btn soft"
-            onClick={() => store.batch(() => sampleRecipes().forEach((r) => store.put('recipes', r.id, r)))}
-          >
-            <Sparkles size={18} /> Mit Beispielrezepten ausprobieren
+          <button className="btn soft" onClick={() => addStarterRecipes()}>
+            <Sparkles size={18} /> {starterRecipes().length} vegetarische Alltagsrezepte laden
           </button>
+          <p className="small" style={{ margin: 0 }}>
+            Einfach, günstig, ohne Fleisch. Was euch nicht gefällt, löscht ihr wieder; Lieblinge markiert ihr mit ♥.
+          </p>
         </div>
       </div>
     );
@@ -332,7 +333,7 @@ function SlotCard({
                   <div className="reasons">
                     {reasons.map((r) => (
                       <span key={r} className="reason">
-                        {r.startsWith('Saison') ? <Leaf size={14} /> : r.startsWith('Habt') || r.startsWith('Flex') ? <Refrigerator size={14} /> : <Sparkles size={14} />}
+                        {r === 'Favorit' ? <Heart size={14} fill="currentColor" /> : r.startsWith('Saison') ? <Leaf size={14} /> : r.startsWith('Habt') || r.startsWith('Flex') ? <Refrigerator size={14} /> : <Sparkles size={14} />}
                         {r}
                       </span>
                     ))}
@@ -380,7 +381,7 @@ function SlotCard({
   );
 }
 
-const STAPLES = ['Zwiebeln', 'Knoblauch', 'Kartoffeln', 'Möhren', 'Paprika', 'Champignons', 'Feta', 'Mozzarella', 'Parmesan', 'Joghurt', 'Sahne', 'Eier', 'Tofu', 'Halloumi', 'Hackfleisch', 'Hähnchen', 'Lachs', 'Kokosmilch', 'Kichererbsen'];
+const STAPLES = ['Zwiebeln', 'Knoblauch', 'Kartoffeln', 'Möhren', 'Paprika', 'Champignons', 'Feta', 'Mozzarella', 'Parmesan', 'Gouda', 'Joghurt', 'Quark', 'Sahne', 'Schmand', 'Eier', 'Tofu', 'Halloumi', 'Kokosmilch', 'Kichererbsen', 'Rote Linsen', 'Kidneybohnen', 'Reis', 'Nudeln'];
 
 function PantryCard({ pantry, month }: { pantry: string[]; month: number }) {
   const [text, setText] = useState('');

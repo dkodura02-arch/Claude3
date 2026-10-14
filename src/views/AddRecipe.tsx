@@ -1,12 +1,42 @@
-import { useState } from 'react';
-import { ArrowLeft, ClipboardPaste, Link2, Loader2, PenLine } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { ArrowLeft, ClipboardPaste, FileText, Link2, Loader2, PenLine } from 'lucide-react';
 import { navigate, useApp } from '../AppState';
 import { RecipeEditor } from './RecipeEditor';
+import { Segmented } from '../components/ui';
 import { errorMessage } from '../lib/api';
-import { parseRecipeHtml, parseRecipeText } from '../lib/importer';
+import { uid } from '../lib/hooks';
+import { guessBatch, guessCarb, guessEffort, parseRecipeHtml, parseRecipeText, type ImportedRecipe } from '../lib/importer';
+import { recipesFromPdf } from '../lib/pdf';
 import { store } from '../lib/store';
+import type { Batch, Recipe } from '../lib/types';
 
-type Stage = 'choose' | 'link' | 'text' | 'edit';
+type Stage = 'choose' | 'link' | 'text' | 'edit' | 'bulk';
+
+interface BulkItem {
+  recipe: ImportedRecipe;
+  batch: Batch;
+  include: boolean;
+}
+
+function fromImport(r: ImportedRecipe, batch: Batch): Recipe {
+  const recipe: Recipe = {
+    id: uid(),
+    title: r.title || 'Rezept',
+    image: r.imageUrl ? { url: r.imageUrl } : undefined,
+    sourceUrl: r.sourceUrl,
+    servings: r.servings,
+    time: r.time,
+    batch,
+    effort: guessEffort(r.time),
+    price: 2,
+    carb: guessCarb(r.ingredients),
+    ingredients: r.ingredients,
+    steps: r.steps,
+    notes: r.notes,
+    createdAt: Date.now(),
+  };
+  return JSON.parse(JSON.stringify(recipe)) as Recipe;
+}
 
 export function AddRecipe() {
   const { draft, setDraft } = useApp();
@@ -15,8 +45,53 @@ export function AddRecipe() {
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [bulk, setBulk] = useState<BulkItem[]>([]);
+  const pdfRef = useRef<HTMLInputElement>(null);
+  const { showToast } = useApp();
+
+  // leaving "Rezept hinzufügen" (e.g. via the bottom bar) discards an unsaved import
+  useEffect(() => () => setDraft(null), [setDraft]);
 
   if (stage === 'edit') return <RecipeEditor key={draft?.title ?? 'leer'} />;
+
+  const importPdfs = async (files: FileList | null) => {
+    if (!files?.length) return;
+    setBusy(true);
+    setError(null);
+    const found: ImportedRecipe[] = [];
+    const failed: string[] = [];
+    for (const file of Array.from(files)) {
+      try {
+        const list = await recipesFromPdf(file);
+        if (!list.length) failed.push(`${file.name}: kein Rezept erkannt`);
+        found.push(...list);
+      } catch (e) {
+        failed.push(`${file.name}: ${errorMessage(e)}`);
+      }
+    }
+    setBusy(false);
+    if (pdfRef.current) pdfRef.current.value = '';
+    if (failed.length) setError(failed.join('\n'));
+    if (found.length === 1 && !failed.length) {
+      setDraft(found[0]);
+      setStage('edit');
+    } else if (found.length) {
+      setBulk(found.map((r) => ({ recipe: r, batch: guessBatch(r.servings), include: true })));
+      setStage('bulk');
+    }
+  };
+
+  const saveBulk = () => {
+    const chosen = bulk.filter((b) => b.include);
+    store.batch(() => {
+      for (const b of chosen) {
+        const r = fromImport(b.recipe, b.batch);
+        store.put('recipes', r.id, r);
+      }
+    });
+    showToast(`${chosen.length} Rezepte gespeichert – Aufwand und Preis könnt ihr beim Rezept anpassen`);
+    navigate({ name: 'rezepte' }, true);
+  };
 
   const importLink = async () => {
     const link = url.trim().match(/https?:\/\/\S+/)?.[0];
@@ -82,6 +157,15 @@ export function AddRecipe() {
               <span>Aus Notizen, WhatsApp oder E-Mail kopieren</span>
             </div>
           </button>
+          <button className="option" onClick={() => pdfRef.current?.click()} disabled={busy}>
+            <span className="ico">{busy ? <Loader2 size={22} className="spin" /> : <FileText size={22} />}</span>
+            <div>
+              <strong>{busy ? 'PDF wird gelesen …' : 'PDF hochladen'}</strong>
+              <span>Export aus einer Kochbuch-App – auch mehrere Dateien oder Rezepte auf einmal</span>
+            </div>
+          </button>
+          <input ref={pdfRef} type="file" accept="application/pdf,.pdf" multiple hidden onChange={(e) => importPdfs(e.target.files)} />
+          {error && <div className="notice err" style={{ whiteSpace: 'pre-line' }}>{error}</div>}
           <button
             className="option"
             onClick={() => {
@@ -138,6 +222,52 @@ export function AddRecipe() {
               Stattdessen von Hand eintragen
             </button>
           )}
+        </div>
+      )}
+
+      {stage === 'bulk' && (
+        <div className="stack">
+          <div className="notice ok">
+            {bulk.length} Rezepte gefunden. Wählt aus, welche ihr übernehmen wollt, und ob es Big oder Small Batch ist.
+          </div>
+          {error && <div className="notice err" style={{ whiteSpace: 'pre-line' }}>{error}</div>}
+          {bulk.map((b, i) => (
+            <div key={i} className="card card-pad stack" style={{ gap: 10, opacity: b.include ? 1 : 0.55 }}>
+              <label className="switch">
+                <input
+                  type="checkbox"
+                  checked={b.include}
+                  onChange={(e) => setBulk(bulk.map((x, k) => (k === i ? { ...x, include: e.target.checked } : x)))}
+                />
+                <span>
+                  <strong>{b.recipe.title}</strong>
+                  <br />
+                  <span className="hint">
+                    {b.recipe.ingredients.length} Zutaten · {b.recipe.steps.length} {b.recipe.steps.length === 1 ? 'Schritt' : 'Schritte'}
+                    {b.recipe.servings ? ` · ${b.recipe.servings} Portionen` : ''}
+                  </span>
+                </span>
+              </label>
+              {b.include && (
+                <Segmented
+                  value={b.batch}
+                  onChange={(v) => setBulk(bulk.map((x, k) => (k === i ? { ...x, batch: v } : x)))}
+                  options={[
+                    { id: 'big', label: 'Big Batch' },
+                    { id: 'small', label: 'Small Batch' },
+                  ]}
+                />
+              )}
+            </div>
+          ))}
+          <div className="sticky-actions">
+            <button className="btn ghost" onClick={back}>
+              Abbrechen
+            </button>
+            <button className="btn primary" onClick={saveBulk} disabled={!bulk.some((b) => b.include)}>
+              {bulk.filter((b) => b.include).length} speichern
+            </button>
+          </div>
         </div>
       )}
 

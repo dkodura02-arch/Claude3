@@ -120,6 +120,7 @@ export function RecipeEditor({ id }: { id?: string }) {
       notes: f.notes.trim() || undefined,
       seasonMonths: f.manualSeason && f.months.length ? [...f.months].sort((a, b) => a - b) : undefined,
       sample: existing?.sample,
+      favorite: existing?.favorite,
       createdAt: existing?.createdAt ?? Date.now(),
     };
     // drop undefined fields so the stored JSON stays clean

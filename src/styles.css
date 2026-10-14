@@ -4,8 +4,8 @@
   --surface-2: #f1ebe0;
   --surface-3: #e9e1d3;
   --text: #2a2823;
-  --muted: #6f695e;
-  --faint: #9d968a;
+  --muted: #5c564c;
+  --faint: #7d766a;
   --border: #e4dccd;
   --primary: #4d6b52;
   --primary-strong: #3b5640;
@@ -26,7 +26,7 @@
   --radius-sm: 12px;
   --font-head: 'Fraunces', Georgia, 'Times New Roman', serif;
   --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --nav-h: 64px;
+  --nav-h: 4.3rem;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   color-scheme: light;
 }
@@ -38,8 +38,8 @@
     --surface-2: #272b26;
     --surface-3: #30352f;
     --text: #ece8df;
-    --muted: #aaa497;
-    --faint: #7d786d;
+    --muted: #bdb7aa;
+    --faint: #9a9488;
     --border: #343a33;
     --primary: #8fb796;
     --primary-strong: #a9cdaf;
@@ -63,14 +63,26 @@
   box-sizing: border-box;
 }
 
+html {
+  font-size: 18px;
+}
+
+html[data-font='normal'] {
+  font-size: 16px;
+}
+
+html[data-font='sehr-gross'] {
+  font-size: 20.5px;
+}
+
 html,
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 1.45;
+  font-size: 1rem;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }
@@ -244,7 +256,7 @@ h3 {
   justify-content: center;
   gap: 3px;
   color: var(--faint);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 600;
   letter-spacing: 0.01em;
 }
@@ -293,15 +305,15 @@ h3 {
 }
 
 .small {
-  font-size: 0.85rem;
+  font-size: 0.92rem;
 }
 
 .tiny {
-  font-size: 0.75rem;
+  font-size: 0.84rem;
 }
 
 .section-title {
-  font-size: 0.78rem;
+  font-size: 0.84rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -450,7 +462,7 @@ h3 {
   border-radius: 999px;
   border: 1px solid var(--border);
   background: var(--surface);
-  font-size: 0.88rem;
+  font-size: 0.95rem;
   font-weight: 500;
   white-space: nowrap;
   flex: none;
@@ -485,12 +497,12 @@ h3 {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  height: 24px;
-  padding: 0 9px;
+  min-height: 1.75em;
+  padding: 2px 9px;
   border-radius: 999px;
   background: var(--surface-2);
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -545,7 +557,7 @@ h3 {
 
 .segmented button small {
   font-weight: 500;
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   opacity: 0.8;
 }
 
@@ -553,6 +565,11 @@ h3 {
   background: var(--surface);
   color: var(--text);
   box-shadow: var(--shadow);
+}
+
+.font-picker button {
+  min-height: 64px;
+  gap: 4px;
 }
 
 .price-picker {
@@ -585,7 +602,7 @@ h3 {
 
 .field > label,
 .field-label {
-  font-size: 0.85rem;
+  font-size: 0.92rem;
   font-weight: 600;
   color: var(--muted);
 }
@@ -615,7 +632,7 @@ h3 {
 }
 
 .hint {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: var(--muted);
 }
 
@@ -687,6 +704,9 @@ h3 {
 
 .week-label {
   text-align: center;
+  flex: 1;
+  min-width: 0;
+  white-space: normal;
 }
 
 .week-label strong {
@@ -707,7 +727,7 @@ h3 {
 }
 
 .slot-kind {
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   font-weight: 800;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -722,7 +742,7 @@ h3 {
 }
 
 .slot-when {
-  font-size: 0.8rem;
+  font-size: 0.88rem;
   color: var(--muted);
 }
 
@@ -786,7 +806,7 @@ h3 {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.83rem;
+  font-size: 0.92rem;
   color: var(--muted);
 }
 
@@ -836,7 +856,7 @@ h3 {
   color: var(--primary-strong);
   border-radius: 999px;
   padding: 4px 10px;
-  font-size: 0.75rem;
+  font-size: 0.82rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -859,7 +879,7 @@ h3 {
 .filter-row > span {
   width: 64px;
   flex: none;
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--muted);
 }
@@ -948,6 +968,26 @@ h3 {
   backdrop-filter: blur(6px);
 }
 
+.card-fav {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  color: var(--muted);
+  box-shadow: var(--shadow);
+}
+
+.card-fav.on,
+.fav-btn.on {
+  color: var(--accent);
+}
+
 .rcard-body {
   padding: 10px 12px 12px;
   display: flex;
@@ -957,7 +997,7 @@ h3 {
 
 .rcard-title {
   font-weight: 650;
-  font-size: 0.95rem;
+  font-size: 1rem;
   line-height: 1.25;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -966,7 +1006,7 @@ h3 {
 }
 
 .rcard-meta {
-  font-size: 0.75rem;
+  font-size: 0.84rem;
   color: var(--muted);
   display: flex;
   gap: 6px;
@@ -1048,7 +1088,7 @@ h3 {
 .meta small {
   display: block;
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 600;
 }
 
@@ -1074,7 +1114,7 @@ h3 {
 }
 
 .ing-qty {
-  width: 86px;
+  width: 5.4rem;
   flex: none;
   font-weight: 650;
   color: var(--primary-strong);
@@ -1083,7 +1123,7 @@ h3 {
 
 .ing-note {
   color: var(--muted);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
 .flex-box {
@@ -1305,7 +1345,7 @@ h3 {
 }
 
 .option span {
-  font-size: 0.85rem;
+  font-size: 0.92rem;
   color: var(--muted);
 }
 
@@ -1316,7 +1356,7 @@ h3 {
 
 .shop-group h3 {
   font-family: var(--font-body);
-  font-size: 0.78rem;
+  font-size: 0.84rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1378,7 +1418,7 @@ h3 {
 }
 
 .shop-from {
-  font-size: 0.75rem;
+  font-size: 0.84rem;
   color: var(--faint);
 }
 
@@ -1408,7 +1448,7 @@ details.collapse[open] > summary .chev {
 /* ---------- Season ---------- */
 .produce-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
   gap: 8px;
 }
 
@@ -1431,13 +1471,13 @@ details.collapse[open] > summary .chev {
 }
 
 .produce .name {
-  font-size: 0.85rem;
+  font-size: 0.92rem;
   font-weight: 600;
   line-height: 1.2;
 }
 
 .produce .tag {
-  font-size: 0.66rem;
+  font-size: 0.74rem;
   font-weight: 700;
   color: var(--season);
   text-transform: uppercase;
@@ -1506,12 +1546,14 @@ details.collapse[open] > summary .chev {
   background: var(--text);
   color: var(--bg);
   padding: 12px 18px;
-  border-radius: 999px;
+  border-radius: 18px;
+  width: max-content;
+  text-align: center;
   font-size: 0.9rem;
   font-weight: 600;
   box-shadow: var(--shadow-lg);
   animation: up 0.25s;
-  max-width: calc(100vw - 32px);
+  max-width: min(520px, calc(100vw - 32px));
 }
 
 .guide ol {
