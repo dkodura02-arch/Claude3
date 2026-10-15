@@ -74,6 +74,16 @@ export function RecipesView() {
         ))}
       </div>
 
+      {recipes.length > 0 && missing > 0 && (
+        <div className="notice ok" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 10 }}>
+          <strong>Noch {missing} Rezepte aus der Sammlung verfügbar</strong>
+          <span>Einfache, günstige Gerichte ohne Fleisch. Was euch nicht gefällt, löscht ihr einfach wieder.</span>
+          <button className="btn primary" onClick={loadStarter}>
+            <Sparkles size={18} /> Alle {missing} hinzufügen
+          </button>
+        </div>
+      )}
+
       {recipes.length === 0 ? (
         <div className="card empty">
           <div className="big-emoji">📖</div>
@@ -135,17 +145,6 @@ export function RecipesView() {
         </div>
       )}
 
-      {recipes.length > 0 && missing > 0 && (
-        <div className="card card-pad stack" style={{ alignItems: 'flex-start' }}>
-          <strong>Ideen gesucht?</strong>
-          <span className="small muted">
-            {missing} einfache, günstige Gerichte ohne Fleisch aus unserer Sammlung fehlen noch. Was euch nicht gefällt, löscht ihr einfach wieder.
-          </span>
-          <button className="btn soft sm" onClick={loadStarter}>
-            <Sparkles size={16} /> Sammlung hinzufügen
-          </button>
-        </div>
-      )}
 
       <button className="btn accent lg fab" onClick={() => navigate({ name: 'neu' })}>
         <Plus size={22} /> Rezept
