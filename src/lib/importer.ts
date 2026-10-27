@@ -1,4 +1,4 @@
-import { parseIngredient } from './ingredients';
+import { isLegume, parseIngredient } from './ingredients';
 import type { Batch, Carb, Effort, Ingredient } from './types';
 
 export interface ImportedRecipe {
@@ -285,7 +285,8 @@ export function guessCarb(ingredients: Ingredient[]): Carb {
   if (has('bulgur')) return 'bulgur';
   if (has('couscous')) return 'couscous';
   if (has('quinoa')) return 'quinoa';
-  if (has('linsen')) return 'linsen';
+  // Hülsenfrüchte as the base of the dish (Dal, Bohneneintopf …)
+  if (ingredients.some((i) => isLegume(i.name))) return 'linsen';
   return 'ohne';
 }
 

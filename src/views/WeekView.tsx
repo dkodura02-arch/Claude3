@@ -17,7 +17,7 @@ import {
   X,
 } from 'lucide-react';
 import { navigate, useApp } from '../AppState';
-import { RecipeBadges, RecipeImage } from '../components/ui';
+import { RecipeBadges, RecipeImage, Segmented } from '../components/ui';
 import { RecipePicker } from '../components/RecipePicker';
 import { addWeeks, isoWeekNumber, planningWeek, toISODate, mondayOf, weekMonth, weekRangeLabel, weeksBetween } from '../lib/dates';
 import { useCollection } from '../lib/hooks';
@@ -26,7 +26,7 @@ import { PRODUCE, produceInSeason } from '../lib/season';
 import { explain, shuffleWeek, type ShuffleContext, type Slot } from '../lib/shuffle';
 import { addStarterRecipes, starterRecipes } from '../lib/samples';
 import { store } from '../lib/store';
-import type { Effort, Price, Recipe, WeekPlan } from '../lib/types';
+import type { Price, Recipe, WeekPlan } from '../lib/types';
 
 const ROLL_MS = 1100;
 const reducedMotion = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
@@ -91,7 +91,7 @@ export function WeekView() {
     setPicker(null);
   };
 
-  const filterCount = (filters.maxEffort ? 1 : 0) + (filters.maxPrice ? 1 : 0);
+  const noSlowCooker = filters.slowCooker === 'only' && !recipes.some((r) => r.batch === 'big' && r.slowCooker);
   const bothLocked = !!plan.lockBig && !!plan.lockSmall;
   const hasPlan = !!plan.big || !!plan.small;
 
@@ -121,6 +121,66 @@ export function WeekView() {
     <div className="page">
       <WeekSwitch week={week} setWeek={setWeek} />
 
+      <section className="card card-pad filters" aria-label="Filter fürs Würfeln">
+        <div className="filter-row">
+          <span>Aufwand</span>
+          <Segmented
+            value={filters.maxEffort ?? 'egal'}
+            onChange={(v) => setFilters({ ...filters, maxEffort: v === 'egal' ? undefined : v })}
+            options={[
+              { id: 'egal', label: 'Egal' },
+              { id: 'mittel', label: 'Bis mittel' },
+              { id: 'leicht', label: 'Nur leicht' },
+            ]}
+          />
+        </div>
+        <div className="filter-row">
+          <span>
+            Slow Cooker
+            <small>Big Batch</small>
+          </span>
+          <Segmented
+            value={filters.slowCooker ?? 'egal'}
+            onChange={(v) => setFilters({ ...filters, slowCooker: v === 'egal' ? undefined : v })}
+            options={[
+              { id: 'egal', label: 'Egal' },
+              { id: 'only', label: 'Nur mit' },
+              { id: 'exclude', label: 'Ohne' },
+            ]}
+          />
+        </div>
+        {showFilters && (
+          <div className="filter-row">
+            <span>Preis</span>
+            <Segmented
+              value={filters.maxPrice ?? 0}
+              onChange={(v) => setFilters({ ...filters, maxPrice: v === 0 ? undefined : (v as Price) })}
+              options={[
+                { id: 0, label: 'Egal' },
+                { id: 3, label: 'Bis €€€' },
+                { id: 2, label: 'Bis €€' },
+              ]}
+            />
+          </div>
+        )}
+        <div className="row">
+          <button className="btn ghost sm" onClick={() => setShowFilters((v) => !v)}>
+            <SlidersHorizontal size={16} /> {showFilters ? 'Weniger Filter' : `Preis-Filter${filters.maxPrice ? ' (aktiv)' : ''}`}
+          </button>
+          <span className="spacer" />
+          {pantry.length > 0 && (
+            <span className="small muted row" style={{ gap: 4 }}>
+              <Refrigerator size={15} /> {pantry.length} im Vorrat
+            </span>
+          )}
+        </div>
+        {noSlowCooker && (
+          <p className="hint" style={{ margin: 0 }}>
+            Noch kein Big-Batch-Rezept ist als Slow Cooker markiert – das stellt ihr beim Bearbeiten eines Rezepts ein.
+          </p>
+        )}
+      </section>
+
       <button
         className={`btn accent lg block shuffle-btn ${rolling.big || rolling.small ? 'rolling' : ''}`}
         onClick={() => shuffle()}
@@ -129,54 +189,6 @@ export function WeekView() {
         <Dices size={26} />
         {hasPlan ? 'Neu würfeln' : 'Woche würfeln'}
       </button>
-
-      <div className="row">
-        <button className={`btn sm ${filterCount ? 'primary' : 'soft'}`} onClick={() => setShowFilters((v) => !v)}>
-          <SlidersHorizontal size={16} /> Filter{filterCount ? ` (${filterCount})` : ''}
-        </button>
-        {pantry.length > 0 && (
-          <span className="small muted row" style={{ gap: 4 }}>
-            <Refrigerator size={15} /> {pantry.length} Zutat{pantry.length > 1 ? 'en' : ''} im Vorrat
-          </span>
-        )}
-      </div>
-
-      {showFilters && (
-        <div className="card card-pad filters">
-          <div className="filter-row">
-            <span>Aufwand</span>
-            <div className="chips">
-              {(
-                [
-                  [undefined, 'Egal'],
-                  ['mittel', 'Höchstens mittel'],
-                  ['leicht', 'Nur leicht'],
-                ] as [Effort | undefined, string][]
-              ).map(([v, label]) => (
-                <button key={label} className={`chip ${filters.maxEffort === v ? 'on' : ''}`} onClick={() => setFilters({ ...filters, maxEffort: v })}>
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="filter-row">
-            <span>Preis</span>
-            <div className="chips">
-              {(
-                [
-                  [undefined, 'Egal'],
-                  [3, 'Bis €€€'],
-                  [2, 'Bis €€'],
-                ] as [Price | undefined, string][]
-              ).map(([v, label]) => (
-                <button key={label} className={`chip ${filters.maxPrice === v ? 'on' : ''}`} onClick={() => setFilters({ ...filters, maxPrice: v })}>
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {(['big', 'small'] as Slot[]).map((slot) => {
         const recipe = plan[slot] ? byId.get(plan[slot]!) : undefined;

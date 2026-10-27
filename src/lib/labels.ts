@@ -7,7 +7,7 @@ export const CARBS: { id: Carb; label: string; main: boolean }[] = [
   { id: 'bulgur', label: 'Bulgur', main: false },
   { id: 'couscous', label: 'Couscous', main: false },
   { id: 'quinoa', label: 'Quinoa', main: false },
-  { id: 'linsen', label: 'Linsen', main: false },
+  { id: 'linsen', label: 'Hülsenfrüchte', main: false },
   { id: 'ohne', label: 'Ohne', main: false },
 ];
 

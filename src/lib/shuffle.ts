@@ -7,6 +7,8 @@ import type { Batch, Carb, Effort, Price, Recipe, WeekPlan } from './types';
 export interface ShuffleFilters {
   maxEffort?: Effort;
   maxPrice?: Price;
+  /** Only for the Big Batch: only slow-cooker dishes, or none of them */
+  slowCooker?: 'only' | 'exclude';
 }
 
 export interface ShuffleContext {
@@ -74,10 +76,12 @@ export function lastCookedWeeks(ctx: Pick<ShuffleContext, 'plans' | 'week'>): Ma
   return map;
 }
 
-function passesFilters(r: Recipe, f?: ShuffleFilters): boolean {
+function passesFilters(r: Recipe, batch: Batch, f?: ShuffleFilters): boolean {
   if (!f) return true;
   if (f.maxEffort && effortLevel(r.effort) > effortLevel(f.maxEffort)) return false;
   if (f.maxPrice && r.price > f.maxPrice) return false;
+  if (batch === 'big' && f.slowCooker === 'only' && !r.slowCooker) return false;
+  if (batch === 'big' && f.slowCooker === 'exclude' && r.slowCooker) return false;
   return true;
 }
 
@@ -182,7 +186,7 @@ function sharesProduce(a: Recipe, b?: Recipe): boolean {
 }
 
 function pool(ctx: ShuffleContext, batch: Batch, exclude: Set<string>): Recipe[] {
-  return ctx.recipes.filter((r) => r.batch === batch && passesFilters(r, ctx.filters) && !exclude.has(r.id));
+  return ctx.recipes.filter((r) => r.batch === batch && passesFilters(r, batch, ctx.filters) && !exclude.has(r.id));
 }
 
 /**

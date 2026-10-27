@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react';
-import { Heart, Plus, Search, Sparkles } from 'lucide-react';
+import { CookingPot, Heart, Plus, Search, Sparkles } from 'lucide-react';
 import { navigate, useApp } from '../AppState';
 import { EffortBadge, PriceBadge, RecipeImage, SeasonBadge } from '../components/ui';
 import { weekMonth } from '../lib/dates';
 import { useCollection } from '../lib/hooks';
 import { CARBS, batchLabel, carbLabel } from '../lib/labels';
 import { recipeSeason } from '../lib/season';
+import { hasLegumes } from '../lib/ingredients';
 import { addStarterRecipes, missingStarterCount } from '../lib/samples';
 import { store } from '../lib/store';
 import type { Batch, Carb } from '../lib/types';
@@ -19,6 +20,7 @@ export function RecipesView() {
   const [carb, setCarb] = useState<Carb | null>(null);
   const [seasonOnly, setSeasonOnly] = useState(false);
   const [favOnly, setFavOnly] = useState(false);
+  const [slowOnly, setSlowOnly] = useState(false);
   const missing = missingStarterCount();
   const loadStarter = () => {
     const n = addStarterRecipes();
@@ -30,7 +32,9 @@ export function RecipesView() {
     return recipes
       .filter((r) => !favOnly || r.favorite)
       .filter((r) => !batch || r.batch === batch)
-      .filter((r) => !carb || r.carb === carb)
+      .filter((r) => !slowOnly || r.slowCooker)
+      // "Hülsenfrüchte" also finds dishes that contain some, e.g. Chili with rice
+      .filter((r) => !carb || r.carb === carb || (carb === 'linsen' && hasLegumes(r)))
       .filter((r) => !seasonOnly || recipeSeason(r, month).strictHit || recipeSeason(r, month).hits.length > 0)
       .filter(
         (r) =>
@@ -39,7 +43,7 @@ export function RecipesView() {
           r.ingredients.some((i) => i.name.toLowerCase().includes(needle)),
       )
       .sort((a, b) => a.title.localeCompare(b.title, 'de'));
-  }, [recipes, q, batch, carb, seasonOnly, favOnly, month]);
+  }, [recipes, q, batch, carb, seasonOnly, favOnly, slowOnly, month]);
 
   const counts = { big: recipes.filter((r) => r.batch === 'big').length, small: recipes.filter((r) => r.batch === 'small').length };
 
@@ -62,6 +66,9 @@ export function RecipesView() {
             {batchLabel(b)} · {counts[b]}
           </button>
         ))}
+        <button className={`chip ${slowOnly ? 'on' : ''}`} onClick={() => setSlowOnly(!slowOnly)}>
+          <CookingPot size={15} /> Slow Cooker · {recipes.filter((r) => r.slowCooker).length}
+        </button>
         <button className={`chip ${seasonOnly ? 'on' : ''}`} onClick={() => setSeasonOnly(!seasonOnly)}>
           🍃 Passt zur Saison
         </button>
@@ -137,6 +144,11 @@ export function RecipesView() {
                 <div className="rcard-meta">
                   {r.carb !== 'ohne' && <span>{carbLabel(r.carb)}</span>}
                   {r.flexVeg && <span>+ Gemüse nach Wahl</span>}
+                  {r.slowCooker && (
+                    <span className="row" style={{ gap: 3 }}>
+                      <CookingPot size={13} /> Slow Cooker
+                    </span>
+                  )}
                   <SeasonBadge recipe={r} month={month} />
                 </div>
               </div>

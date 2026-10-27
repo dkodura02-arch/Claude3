@@ -1,7 +1,8 @@
 import { useEffect, useState, type ReactNode } from 'react';
-import { Leaf, X } from 'lucide-react';
+import { CookingPot, Leaf, X } from 'lucide-react';
 import { batchLabel, carbLabel, effortLabel, effortLevel, MONTHS_SHORT } from '../lib/labels';
 import { formatMonths, recipeSeason, recipeSeasonMonths } from '../lib/season';
+import { hasLegumes } from '../lib/ingredients';
 import { store } from '../lib/store';
 import type { Carb, Recipe } from '../lib/types';
 
@@ -111,6 +112,12 @@ export function RecipeBadges({ recipe, month, batch = false }: { recipe: Recipe;
       <PriceBadge price={recipe.price} />
       {recipe.carb !== 'ohne' && <span className="badge">{carbLabel(recipe.carb)}</span>}
       {recipe.flexVeg && <span className="badge">+ Gemüse</span>}
+      {recipe.slowCooker && (
+        <span className="badge slow">
+          <CookingPot size={13} /> Slow Cooker
+        </span>
+      )}
+      {recipe.carb !== 'linsen' && hasLegumes(recipe) && <span className="badge">Hülsenfrüchte</span>}
       <SeasonBadge recipe={recipe} month={month} />
     </div>
   );

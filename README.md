@@ -9,12 +9,13 @@ Unser Wochen-Kochplaner: Rezepte mit Bild und Zutaten, Saisonkalender, Shuffle-M
 - **Woche würfeln:** Pro Woche ein **Big Batch** (Meal-Prep für Mo–Fr) und ein **Small Batch** (Wochenende).
   - Big Batch wiederholt sich nicht: Was kürzlich gekocht wurde, ist gesperrt. Was am längsten nicht dran war, kommt am ehesten.
   - Small Batch darf jederzeit wieder vorkommen.
-  - Kohlenhydrate wechseln sich ab: Big und Small Batch einer Woche haben verschiedene Beilagen, und der Big Batch eine andere als in der Vorwoche. Kartoffeln, Reis und Nudeln sind die Hauptrotation; Bulgur, Couscous, Quinoa und Linsen werden einfach mitgemischt.
+  - Kohlenhydrate wechseln sich ab: Big und Small Batch einer Woche haben verschiedene Beilagen, und der Big Batch eine andere als in der Vorwoche. Kartoffeln, Reis und Nudeln sind die Hauptrotation; Bulgur, Couscous, Quinoa und Hülsenfrüchte (Linsen, Kichererbsen, Bohnen) werden einfach mitgemischt.
   - Saisonzutaten bekommen einen Bonus. Rezepte mit Spargel, Bärlauch & Co. kommen nur in ihrer Saison.
   - Die beiden Gerichte einer Woche haben möglichst nicht dasselbe Hauptgemüse.
   - **„Was haben wir da?“:** Rezepte mit Zutaten aus dem Kühlschrank werden bevorzugt. Rezepte mit **flexiblem Gemüse** passen zu jedem Gemüse.
-  - Einzeln neu würfeln, festhalten oder selbst wählen. Filter für Aufwand und Preis.
-- **Rezepte:** per Link (Chefkoch, KptnCook, Lecker, Blogs …), als **PDF** (z. B. Export aus einer Kochbuch-App – auch mehrere Dateien oder Rezepte auf einmal), als eingefügter Text oder von Hand mit Foto. Jedes Rezept hat **Typ** (Big/Small Batch), **Aufwand** (leicht/mittel/aufwendig), **Preis** (1–5 €), **Kohlenhydrat** und optional **flexibles Gemüse**.
+  - Einzeln neu würfeln, festhalten oder selbst wählen.
+  - Filter direkt über dem Würfel-Knopf: **Aufwand** (z. B. „Nur leicht“, wenn wenig Zeit ist), **Slow Cooker** für den Big Batch (nur mit / ohne) und Preis.
+- **Rezepte:** per Link (Chefkoch, KptnCook, Lecker, Blogs …), als **PDF** (z. B. Export aus einer Kochbuch-App – auch mehrere Dateien oder Rezepte auf einmal), als eingefügter Text oder von Hand mit Foto. Jedes Rezept hat **Typ** (Big/Small Batch), **Aufwand** (leicht/mittel/aufwendig), **Preis** (1–5 €), **Kohlenhydrat** und optional **flexibles Gemüse** und **Slow Cooker**. Rezepte mit Hülsenfrüchten werden automatisch markiert.
 - **Rezeptsammlung:** gut 40 einfache, günstige Gerichte ohne Fleisch zum Starten – einzeln löschbar, gelöschte kommen nicht wieder.
 - **Favoriten (♥):** kommen beim Würfeln doppelt so oft dran.
 - **Schriftgröße:** Normal, Groß (Standard) oder Sehr groß – pro Gerät in den Einstellungen.

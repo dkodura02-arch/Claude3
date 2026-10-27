@@ -9,6 +9,7 @@ export type Carb =
   | 'bulgur'
   | 'couscous'
   | 'quinoa'
+  /** Hülsenfrüchte (Linsen, Kichererbsen, Bohnen) – id kept from the first version */
   | 'linsen'
   | 'ohne';
 
@@ -41,6 +42,8 @@ export interface Recipe {
   price: Price;
   carb: Carb;
   flexVeg?: { amount?: string };
+  /** Works in the slow cooker */
+  slowCooker?: boolean;
   ingredients: Ingredient[];
   steps: string[];
   notes?: string;

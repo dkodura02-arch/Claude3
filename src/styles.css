@@ -522,6 +522,11 @@ h3 {
   color: var(--accent-strong);
 }
 
+.badge.slow {
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
 .badge.price {
   letter-spacing: 0.02em;
 }
@@ -877,11 +882,29 @@ h3 {
 }
 
 .filter-row > span {
-  width: 64px;
+  width: 6.2rem;
   flex: none;
+  line-height: 1.2;
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--muted);
+}
+
+.filter-row > span small {
+  display: block;
+  font-weight: 500;
+  font-size: 0.78rem;
+  color: var(--faint);
+}
+
+.filter-row .segmented {
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-row .segmented button {
+  min-height: 44px;
+  padding: 4px 4px;
 }
 
 .pantry-input {

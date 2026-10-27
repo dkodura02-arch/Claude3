@@ -333,3 +333,17 @@ export function matchesPantry(ingredientName: string, pantryName: string): boole
   const bw = b.split(' ');
   return bw.every((w) => aw.some((x) => x === w || (w.length >= 5 && x.endsWith(w))));
 }
+
+const LEGUME_WORDS = ['linse', 'kichererbse', 'bohne', 'schälerbse', 'gelbe erbse', 'erbsenmehl', 'edamame', 'lupine', 'hummus', 'falafel'];
+// green beans / peas / sugar snaps are eaten as vegetables, coffee and vanilla aren't legumes at all
+const NOT_LEGUME = ['grüne bohne', 'buschbohne', 'brechbohne', 'prinzessbohne', 'stangenbohne', 'keniabohne', 'kaffeebohne', 'vanille', 'tonkabohne', 'kakaobohne', 'bohnenkraut', 'zuckerschote'];
+
+/** Lentils, chickpeas, beans, dried peas … */
+export function isLegume(name: string): boolean {
+  const n = name.toLowerCase();
+  return LEGUME_WORDS.some((w) => n.includes(w)) && !NOT_LEGUME.some((w) => n.includes(w));
+}
+
+export function hasLegumes(recipe: { ingredients: Ingredient[] }): boolean {
+  return recipe.ingredients.some((i) => isLegume(i.name));
+}

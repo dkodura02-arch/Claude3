@@ -47,6 +47,8 @@ export class Store {
 
   version = 0;
   ready = false;
+  /** Called after every successful sync (data from the other phone may have arrived) */
+  afterSync?: () => void;
   config: ApiConfig | null = typeof localStorage !== 'undefined' ? loadSettings() : null;
   status: SyncStatus = isConfigured(this.config) ? 'idle' : 'local';
   lastSync?: number;
@@ -253,6 +255,7 @@ export class Store {
       this.status = 'idle';
       this.error = undefined;
       this.lastSync = Date.now();
+      this.afterSync?.();
     } catch (e) {
       this.status = navigator.onLine === false || (e instanceof ApiError && e.code === 'network') ? 'offline' : 'error';
       this.error = errorMessage(e);

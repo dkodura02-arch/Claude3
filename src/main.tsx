@@ -4,10 +4,12 @@ import { App } from './App';
 import { AppStateProvider } from './AppState';
 import { store } from './lib/store';
 import { applyFontSize } from './lib/prefs';
+import { updateStoredStarterRecipes } from './lib/samples';
 import './styles.css';
 
 applyFontSize();
-void store.init();
+store.afterSync = updateStoredStarterRecipes;
+void store.init().then(updateStoredStarterRecipes);
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

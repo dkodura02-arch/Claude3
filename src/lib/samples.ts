@@ -12,6 +12,8 @@ const SAMPLES: Sample[] = [
   {
     title: 'Kürbis-Kokos-Curry mit Reis',
     batch: 'big',
+    slowCooker: true,
+    notes: 'Slow Cooker: Zwiebeln, Knoblauch und Ingwer kurz anschwitzen, dann alles außer Reis und Limette 4–5 Std. auf LOW garen. Reis frisch kochen.',
     effort: 'mittel',
     price: 2,
     carb: 'reis',
@@ -85,6 +87,8 @@ Salz und Pfeffer`,
   {
     title: 'Chili sin Carne',
     batch: 'big',
+    slowCooker: true,
+    notes: 'Slow Cooker: Zwiebeln, Knoblauch und Paprika kurz anbraten, mit allen Zutaten außer dem Reis 6–8 Std. auf LOW garen.',
     effort: 'mittel',
     price: 2,
     carb: 'reis',
@@ -264,6 +268,8 @@ const MORE: Sample[] = [
     id: 'start-dal',
     title: 'Rote-Linsen-Dal mit Fladenbrot',
     batch: 'big',
+    slowCooker: true,
+    notes: 'Slow Cooker: Alles außer Limette und Fladenbrot 5–6 Std. auf LOW garen, dann mit Limettensaft abschmecken.',
     effort: 'leicht',
     price: 1,
     carb: 'linsen',
@@ -291,6 +297,8 @@ const MORE: Sample[] = [
     id: 'start-kichererbsen-curry',
     title: 'Kichererbsen-Spinat-Curry mit Reis',
     batch: 'big',
+    slowCooker: true,
+    notes: 'Slow Cooker: Alles außer Spinat und Reis 4–6 Std. auf LOW garen, den Spinat zum Schluss unterrühren.',
     effort: 'leicht',
     price: 1,
     carb: 'reis',
@@ -341,6 +349,8 @@ Muskat
     id: 'start-linseneintopf',
     title: 'Linseneintopf mit Kartoffeln',
     batch: 'big',
+    slowCooker: true,
+    notes: 'Slow Cooker: Alle Zutaten außer dem Essig 7–8 Std. auf LOW garen, zum Schluss mit Essig abschmecken.',
     effort: 'leicht',
     price: 1,
     carb: 'linsen',
@@ -572,6 +582,8 @@ Parmesan`,
     id: 'start-kartoffelgulasch',
     title: 'Kartoffelgulasch',
     batch: 'big',
+    slowCooker: true,
+    notes: 'Slow Cooker: Zwiebeln mit Tomatenmark und Paprikapulver kurz anrösten, dann alles außer Schmand 6 Std. auf LOW garen.',
     effort: 'leicht',
     price: 1,
     carb: 'kartoffeln',
@@ -597,6 +609,8 @@ Parmesan`,
     id: 'start-gruenkohl',
     title: 'Grünkohl-Eintopf mit Räuchertofu',
     batch: 'big',
+    slowCooker: true,
+    notes: 'Slow Cooker: Alles außer den Haferflocken 6–7 Std. auf LOW garen, zum Schluss binden und abschmecken.',
     effort: 'mittel',
     price: 2,
     carb: 'kartoffeln',
@@ -645,9 +659,11 @@ Muskat`,
     id: 'start-erbsensuppe',
     title: 'Gelbe Erbsensuppe',
     batch: 'big',
+    slowCooker: true,
+    notes: 'Slow Cooker: Alles in den Topf geben und 8 Std. auf LOW garen, bis die Erbsen zerfallen.',
     effort: 'leicht',
     price: 1,
-    carb: 'ohne',
+    carb: 'linsen',
     servings: 6,
     time: 70,
     ingredients: `500 g gelbe Schälerbsen
@@ -1096,4 +1112,25 @@ export function addStarterRecipes({ includeDeleted = false } = {}): number {
   const list = missingStarter(includeDeleted);
   store.batch(() => list.forEach((r) => store.put('recipes', r.id, r)));
   return list.length;
+}
+
+/**
+ * Collection recipes stored before the slow-cooker flag existed get it (plus the short
+ * instructions) afterwards. Recipes where it was switched off on purpose (false) stay as they are.
+ */
+export function updateStoredStarterRecipes(): number {
+  const updates: Recipe[] = [];
+  for (const s of starterRecipes()) {
+    if (!s.slowCooker) continue;
+    const r = store.get('recipes', s.id);
+    if (!r || !r.sample || r.slowCooker !== undefined) continue;
+    updates.push({
+      ...r,
+      slowCooker: true,
+      notes: r.notes ?? s.notes,
+      carb: r.carb === 'ohne' && s.carb === 'linsen' ? 'linsen' : r.carb,
+    });
+  }
+  if (updates.length) store.batch(() => updates.forEach((u) => store.put('recipes', u.id, u)));
+  return updates.length;
 }

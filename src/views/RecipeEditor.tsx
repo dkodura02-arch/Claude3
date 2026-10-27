@@ -27,6 +27,7 @@ function initial(recipe: Recipe | undefined, draft: ImportedRecipe | null) {
       carb: recipe.carb,
       flex: !!recipe.flexVeg,
       flexAmount: recipe.flexVeg?.amount ?? '',
+      slow: !!recipe.slowCooker,
       ingredients: ingredientsToText(recipe.ingredients),
       steps: recipe.steps.join('\n'),
       notes: recipe.notes ?? '',
@@ -47,6 +48,7 @@ function initial(recipe: Recipe | undefined, draft: ImportedRecipe | null) {
     carb: d ? guessCarb(d.ingredients) : ('ohne' as Carb),
     flex: false,
     flexAmount: '',
+    slow: false,
     ingredients: d ? ingredientsToText(d.ingredients) : '',
     steps: d?.steps.join('\n') ?? '',
     notes: d?.notes ?? '',
@@ -112,6 +114,8 @@ export function RecipeEditor({ id }: { id?: string }) {
       price: f.price,
       carb: f.carb,
       flexVeg: f.flex ? { amount: f.flexAmount.trim() || undefined } : undefined,
+      // stored as false (not left out) so the collection update doesn't switch it back on
+      slowCooker: f.slow,
       ingredients: parsed,
       steps: f.steps
         .split('\n')
@@ -253,6 +257,17 @@ export function RecipeEditor({ id }: { id?: string }) {
         {f.flex && (
           <input className="input" value={f.flexAmount} onChange={(e) => set('flexAmount', e.target.value)} placeholder="Menge, z. B. 400 g" />
         )}
+      </div>
+
+      <div className="card card-pad stack">
+        <label className="switch">
+          <input type="checkbox" checked={f.slow} onChange={(e) => set('slow', e.target.checked)} />
+          <span>
+            <strong>Slow Cooker</strong>
+            <br />
+            <span className="hint">Lässt sich im Slow Cooker zubereiten – beim Würfeln filterbar</span>
+          </span>
+        </label>
       </div>
 
       <div className="row" style={{ gap: 12 }}>
